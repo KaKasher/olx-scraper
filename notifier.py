@@ -20,17 +20,17 @@ def send_discord_notification(webhook_url, listing_data):
         "color": 15258703,  # A nice gold/yellow color
         "fields": [
             {
-                "name": "Price",
+                "name": "Cena",
                 "value": listing_data.get('price', 'N/A'),
                 "inline": True
             },
             {
-                "name": "Area",
+                "name": "Metraż",
                 "value": f"{listing_data.get('area', 'N/A')} m²",
                 "inline": True
             },
             {
-                "name": "Location",
+                "name": "Lokalizacja",
                 "value": listing_data.get('location', 'N/A'),
                 "inline": False
             }
@@ -39,11 +39,11 @@ def send_discord_notification(webhook_url, listing_data):
     
     # Conditionally add extra details if they exist
     details_fields = [
-        ("Offer Type", listing_data.get('offer_type')),
-        ("Furnished", listing_data.get('furnished')),
-        ("Pets Allowed", listing_data.get('pets')),
-        ("Building Type", listing_data.get('building_type')),
-        ("Additional Rent", listing_data.get('additional_rent'))
+        ("Typ oferty", listing_data.get('offer_type')),
+        ("Umeblowane", listing_data.get('furnished')),
+        ("Zwierzęta", listing_data.get('pets')),
+        ("Rodzaj zabudowy", listing_data.get('building_type')),
+        ("Czynsz (dodatkowo)", listing_data.get('additional_rent'))
     ]
 
     for name, value in details_fields:
