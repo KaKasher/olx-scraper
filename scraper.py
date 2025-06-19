@@ -25,6 +25,14 @@ def scrape_listing_details(url):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # Scrape the main image from the details page.
+        image_gallery = soup.find('div', {'data-testid': 'image-galery-container'})
+        if image_gallery:
+            image_element = image_gallery.find('img')
+            # Ensure we get a valid, absolute URL for the image.
+            if image_element and image_element.get('src') and image_element.get('src').startswith('https://'):
+                details['image_url'] = image_element['src']
+        
         params_container = soup.find('div', {'data-testid': 'ad-parameters-container'})
         if params_container:
             params = params_container.find_all('p')
@@ -122,25 +130,6 @@ def scrape_olx_listings(url):
 
             else:
                 listing_data['url'] = 'N/A'
-
-            img_element = card.find('img')
-            image_url = 'N/A' # Default to N/A
-            if img_element:
-                # First, try to get a valid URL from the 'src' attribute
-                src_url = img_element.get('src')
-                if src_url and src_url.startswith('https://'):
-                    image_url = src_url
-                else:
-                    # If 'src' is a placeholder or invalid, try parsing 'srcset'
-                    srcset = img_element.get('srcset')
-                    if srcset:
-                        # The srcset is a comma-separated list of "url width" pairs.
-                        # We just need the first URL.
-                        first_url_candidate = srcset.split(',')[0].strip().split(' ')[0]
-                        if first_url_candidate.startswith('https://'):
-                            image_url = first_url_candidate
-            
-            listing_data['image_url'] = image_url
 
             location_element = card.find('p', {'data-testid': 'location-date'})
             if location_element:
