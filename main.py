@@ -37,12 +37,13 @@ def main():
         # Identify which listings are new
         for listing in scraped_listings:
             if listing['id'] not in seen_ids:
-                # If the feature is enabled, scrape the listing's page for more details
-                if scrape_details and listing.get('url'):
+                # If the feature is enabled, scrape the listing's page for more details,
+                # but only if it's an OLX link.
+                if scrape_details and listing.get('url') and "olx.pl" in listing['url']:
                     print(f"Scraping details for new listing: {listing['id']}...")
                     additional_details = scrape_listing_details(listing['url'])
                     listing.update(additional_details) # Merge the new details
-
+                
                 new_listings_for_url.append(listing)
                 new_ids_for_url.append(listing['id'])
         

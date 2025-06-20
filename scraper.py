@@ -113,23 +113,20 @@ def scrape_olx_listings(url):
             price_element = card.find('p', {'data-testid': 'ad-price'})
             listing_data['price'] = price_element.text.strip() if price_element else 'N/A'
             
-            url_element = card.find('a', href=True)
-            if url_element:
+            # Find the primary link element for the listing
+            url_element = card.find('a', class_='css-1tqlkj0')
+            if url_element and url_element.get('href'):
                 href = url_element['href']
-                # Ensure we are getting a valid listing URL
-                if href.startswith('/d/oferta/'):
+                # Case 1: It's an absolute URL (e.g., to Otodom)
+                if href.startswith('https://'):
+                    listing_data['url'] = href
+                # Case 2: It's a relative URL for an OLX listing
+                elif href.startswith('/d/oferta/'):
                     listing_data['url'] = 'https://www.olx.pl' + href
                 else:
-                    # If the link is not a direct offer, we might be on a strange card.
-                    # To be safe, we'll try to find a more specific link.
-                    specific_link = card.select_one('a[class*="css-"]')
-                    if specific_link and specific_link['href'].startswith('/d/oferta/'):
-                         listing_data['url'] = 'https://www.olx.pl' + specific_link['href']
-                    else:
-                        listing_data['url'] = 'N/A'
-
+                    listing_data['url'] = 'N/A' # Unrecognized format
             else:
-                listing_data['url'] = 'N/A'
+                listing_data['url'] = 'N/A' # No link found
 
             location_element = card.find('p', {'data-testid': 'location-date'})
             if location_element:
